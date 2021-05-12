@@ -20,13 +20,31 @@
 
 let categories = [];
 
-
 /** Get NUM_CATEGORIES random category from API.
  *
  * Returns array of category ids
  */
 
-function getCategoryIds() {
+ let NUM_CATEGORIES = 6
+
+async function getCategoryIds() {
+    let response = await axios.get(`http://www.jservice.io/api/categories?count=100`);
+    // console.log(response)
+    let IDs = response.data.map(function(result) {
+        return result.id
+    })
+    // console.log(IDs)
+    function randomIndex() {
+        return Math.floor(Math.random()*100)
+    }
+    // console.log(randomIndex())
+    return [IDs[randomIndex()],
+            IDs[randomIndex()],
+            IDs[randomIndex()],
+            IDs[randomIndex()],
+            IDs[randomIndex()],
+            IDs[randomIndex()],
+    ]
 }
 
 /** Return object with data about a category:
@@ -40,6 +58,8 @@ function getCategoryIds() {
  *      ...
  *   ]
  */
+
+
 
 function getCategory(catId) {
 }
@@ -87,6 +107,12 @@ function hideLoadingView() {
  * */
 
 async function setupAndStart() {
+    const response = await axios.get(`http://www.jservice.io/`)
+    console.log(response);
+  
+
+
+
 }
 
 /** On click of start / restart button, set up game. */
