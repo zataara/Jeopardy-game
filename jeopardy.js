@@ -33,7 +33,7 @@ async function getCategoryIds() {
     let IDs = response.data.map(function(result) {
         return result.id
     })
-    // console.log(IDs)
+    console.log(IDs)
     function randomIndex() {
         return Math.floor(Math.random()*100)
     }
@@ -61,7 +61,22 @@ async function getCategoryIds() {
 
 
 
-function getCategory(catId) {
+async function getCategory(catId) {
+    const response = await axios.get(`http://www.jservice.io/api/category?id=${catId}`)
+    console.log(response);
+    const category = response.data;
+    const totalClues = category.clues;
+    const clues = totalClues.map(function(clue){
+        return {question: clue.question,
+                answer: clue.answer,
+                showing: null
+    }})    
+
+    console.log({
+        title: category.title,
+        clues
+        })
+
 }
 
 /** Fill the HTML table#jeopardy with the categories & cells for questions.
