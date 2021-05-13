@@ -1,1 +1,0 @@
-A jeopardy game built using the jeopardy API.

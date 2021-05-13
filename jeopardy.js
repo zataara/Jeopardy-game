@@ -29,22 +29,16 @@ const numClue = 5;
  
 async function getCategoryIds() {
     let response = await axios.get(`http://www.jservice.io/api/categories?count=100`);
-    // console.log(response)
+    //// console.log(response)
     let IDs = response.data.map(function(result) {
         return result.id
     })
-    console.log(IDs)
-    function randomIndex() {
-        return Math.floor(Math.random()*100)
-    }
-    // console.log(randomIndex())
-    return [IDs[randomIndex()],
-            IDs[randomIndex()],
-            IDs[randomIndex()],
-            IDs[randomIndex()],
-            IDs[randomIndex()],
-            IDs[randomIndex()],
-    ]
+    ////console.log(IDs)
+    let randomIDs = _.sampleSize(IDs, numCat)
+    
+    /////console.log(randomIDs)
+    //// console.log(randomIndex())
+    return randomIDs;
 }
 
 /** Return object with data about a category:
@@ -59,23 +53,20 @@ async function getCategoryIds() {
  *   ]
  */
 
-
-
 async function getCategory(catID) {
     const response = await axios.get(`http://www.jservice.io/api/category?id=${catID}`)
     //// console.log(response);
     let category = response.data;
-    let totalClues = category.clues;
-    let clues = totalClues.map(function(clue){
+    let CLUES = category.clues;
+    let usedClues = _.sampleSize(CLUES, numClue);
+    let clues = usedClues.map(function(clue){
         return {question: clue.question,
                 answer: clue.answer,
                 showing: null
     }})    
-
-    console.log({
-        title: category.title,
-        clues
-        })
+    //// console.log(clues)
+    return {title: category.title, clues}
+    ////console.log(usedClues)
 
 }
 
@@ -88,16 +79,15 @@ async function getCategory(catID) {
  */
 
 async function fillTable() {
-    let headerRow = $("<tr>");
+    let tableRow = $("<tr>");
     for (let i = 0; i < numCat; i++) {
-        let title = $("<th>").text(categories[i].title);
-        headerRow.append(title);
+        tableRow.append($("<th>").text(categories[i].title));
     }
     $("#titlerow").append(tableRow);
     for (let j = 0; j < numClue; j++) {
       let tableRow = $("<tr>");
       for (let k = 0; k < numCat; k++) {
-        $tr.append($("<td>").attr("id", `${k}-${j}`).text("???"));
+        tableRow.append($("<td>").attr("id", `${k}-${j}`).text("?"));
       }
       $("#cluesmatrix").append(tableRow);
     }
@@ -154,7 +144,8 @@ function hideLoadingView() {
  * - create HTML table
  * */
 
-async function setupAndStart() {
+async function beginGame() {
+    showLoadingView()
     let IDs = await getCategoryIds();
     for(let ID of IDs) {
         categories.push(await getCategory(ID));
@@ -164,12 +155,11 @@ async function setupAndStart() {
 }
 
 /** On click of start / restart button, set up game. */
-GAMEBUTTON.on('click', setupAndStart);
-console.log('button')
+GAMEBUTTON.on('click', beginGame);
+
 
 
 /** On page load, add event handler for clicking clues */
-$(async function () {
-    setupAndStart();
+function eventListener() {
     $('#gamematrix').on('click', 'td', handleClick);
-});
+}
